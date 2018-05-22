@@ -1,0 +1,43 @@
+{
+  "name": "bridgeApp_Backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "NODE_ENV=production node lib/index.js",
+    "dev": "nodemon lib/index.js",
+    "lint": "eslint lib/",
+    "lint:fix": "eslint lib/ --fix",
+    "prettier:fix": "prettier --print-width 80 --single-quote --trailing-comma es5 --write lib/**/*.js",
+    "precommit": "lint-staged",
+    "format": "npm run lint:fix && npm run prettier:fix"
+  },
+  "lint-staged": {
+    "*.{js,json,css,md}": [
+      "npm run format",
+      "git add"
+    ]
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "3.5.1",
+    "body-parser": "1.18.2",
+    "cors": "2.8.4",
+    "express": "4.16.2",
+    "express-jwt": "^5.3.1",
+    "express-jwt-authz": "^1.0.0",
+    "express-validator": "^5.1.2",
+    "jwks-rsa": "^1.2.1",
+    "jwt-decode": "^2.2.0",
+    "nodemon": "1.12.1",
+    "pg": "7.3.0",
+    "request-promise": "^4.2.2",
+    "sequelize": "4.13.15",
+    "socket.io": "2.0.3"
+  },
+  "devDependencies": {
+    "husky": "^0.14.3",
+    "lint-staged": "^7.0.5"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "bridgeApp",
+    "description": "Mobile App for Bridge Program",
+    "slug": "bridge-app",
+    "privacy": "public",
+    "sdkVersion": "26.0.0",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./icon.png",
+    "splash": {
+      "image": "./splash.png",
+      "resizeMode": "contain"
+    }
+  }
+}
