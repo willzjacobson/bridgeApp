@@ -34,7 +34,7 @@ router.get('/users', jwtAuthz(['read:users']), async (req, res) => {
   }
 });
 
-// router.use('/questions', require('./reports'));
-// router.use('/campaigns', require('./campaigns'));
+router.use('/questionInstances', require('./questionInstances'));
+router.use('/campaigns', require('./campaigns'));
 
 module.exports = router;

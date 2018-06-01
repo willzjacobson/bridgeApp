@@ -2,11 +2,11 @@
 
 module.exports = [
   {
-    admins: ['teacher1', 'teacher2'],
+    admins: ['auth0|5ae680e104eb0b243f1cc942'],
     dueDate: new Date(),
   },
   {
-    admins: ['teacher2', 'teacher3'],
+    admins: ['auth0|5ae680e104eb0b243f1cc942'],
     dueDate: new Date(),
   },
 ];

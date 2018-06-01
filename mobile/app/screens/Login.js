@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, Text, View } from 'react-native';
 import { connect } from 'react-redux';
+import EStyleSheet from 'react-native-extended-stylesheet';
 
 import { login } from '../utils/AuthService';
 import { setLoginInfo } from '../actions/dev';
 
-const styles = StyleSheet.create({
+const styles = EStyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -31,7 +32,7 @@ class Login extends Component {
       await this.props.dispatch(
         setLoginInfo({ token, decodedToken, userId, userFirst }),
       );
-      this.props.navigation.navigate('SignedIn');
+      this.props.navigation.navigate('Home', { userFirst });
     }
   };
 

@@ -1,23 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { View } from 'react-native';
 import { connect } from 'react-redux';
+import EStyleSheet from 'react-native-extended-stylesheet';
 
-import {
-  isLoggedIn,
-  logout,
-  getUserInfoFromStorage,
-} from '../utils/AuthService';
+import { getUserInfoFromStorage } from '../utils/AuthService';
 
 import { connectAlert } from '../components/Alert';
-import {
-  loadResource,
-  loadUsers,
-  setLoginInfo,
-  removeLoginInfo,
-} from '../actions/dev';
+import { CardDeck } from '../components/Cards';
+import { Header } from '../components/Header';
+import { loadQuestionInstances } from '../actions/questionInstances';
+import { setLoginInfo } from '../actions/login';
 
-const styles = StyleSheet.create({
+const styles = EStyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -27,26 +22,20 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     textAlign: 'center',
-    marginTop: 40,
+    marginTop: 70,
   },
 });
 
 class Home extends Component {
   static propTypes = {
     navigation: PropTypes.object,
-    loadingQuestions: PropTypes.bool,
-    loadingNewts: PropTypes.bool,
-    loadingOrgasms: PropTypes.bool,
-    loadingUsers: PropTypes.bool,
-    questions: PropTypes.array,
-    newts: PropTypes.array,
-    orgasms: PropTypes.array,
-    users: PropTypes.array,
-    error: PropTypes.string,
     alertWithType: PropTypes.func,
     dispatch: PropTypes.func,
+    error: PropTypes.string,
     userFirst: PropTypes.string,
+    userId: PropTypes.string,
     token: PropTypes.string,
+    questionInstances: PropTypes.array,
   };
 
   async componentDidMount() {
@@ -63,6 +52,12 @@ class Home extends Component {
       userId,
       userFirst,
     });
+
+    this.props.navigation.setParams({ userFirst });
+
+    return this.props.dispatch(
+      loadQuestionInstances(this.props.token, this.props.userId),
+    );
   }
 
   componentWillReceiveProps(nextProps) {
@@ -79,91 +74,26 @@ class Home extends Component {
     }
   };
 
-  getResource = async resource => {
-    if (!(await isLoggedIn())) {
-      return this.facilitateLogout();
-    }
-
-    return this.props.dispatch(loadResource(resource, this.props.token));
-  };
-
-  getUsers = async () => {
-    if (!(await isLoggedIn())) {
-      return this.facilitateLogout();
-    }
-    return this.props.dispatch(loadUsers(this.props.token));
-  };
-
-  facilitateLogout = async () => {
-    await logout();
-    this.props.dispatch(removeLoginInfo());
-    this.props.navigation.navigate('SignedOut');
+  handleOptionsPress = () => {
+    this.props.navigation.navigate('Options');
   };
 
   render() {
-    const questions = this.props.questions ? (
-      <Text>questions: {JSON.stringify(this.props.questions)}</Text>
-    ) : this.props.loadingQuestions ? (
-      '...'
-    ) : null;
-
-    const newts = this.props.newts ? (
-      <Text>newts: {JSON.stringify(this.props.newts)}</Text>
-    ) : this.props.loadingNewts ? (
-      '...'
-    ) : null;
-
-    const orgasms = this.props.orgasms ? (
-      <Text>orgasms: {JSON.stringify(this.props.orgasms)}</Text>
-    ) : this.props.loadingOrgasms ? (
-      '...'
-    ) : null;
-
-    const users = this.props.users ? (
-      <Text>Users: {JSON.stringify(this.props.users)}</Text>
-    ) : this.props.loadingUsers ? (
-      '...'
-    ) : null;
-
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Hello {this.props.userFirst}</Text>
-        <Button
-          title="Logout"
-          style={styles.title}
-          onPress={this.facilitateLogout}
-        />
-        <Button
-          title="Get Questions"
-          onPress={() => this.getResource('questions')}
-        />
-        <Button title="Get Newts" onPress={() => this.getResource('newts')} />
-        <Button
-          title="Get Orgasms"
-          onPress={() => this.getResource('orgasms')}
-        />
-        <Button title="Get Users" onPress={this.getUsers} />
-        {questions}
-        {newts}
-        {orgasms}
-        {users}
+        <CardDeck questions={this.props.questionInstances} />
+        <Header onPress={this.handleOptionsPress} />
       </View>
     );
   }
 }
 
 const mapStateToProps = state => ({
-  loadingQuestions: state.dev.loadingQuestions,
-  loadingNewts: state.dev.loadingNewts,
-  loadingOrgasms: state.dev.loadingOrgasms,
-  loadingUsers: state.dev.loadingUsers,
-  questions: state.dev.questions,
-  newts: state.dev.newts,
-  orgasms: state.dev.orgasms,
-  users: state.dev.users,
   error: state.dev.error,
-  userFirst: state.dev.userFirst,
-  token: state.dev.token,
+  userFirst: state.loginInfo.userFirst,
+  userId: state.loginInfo.userId,
+  token: state.loginInfo.token,
+  questionInstances: state.questionInstances.questionInstances,
 });
 
 export default connect(mapStateToProps)(connectAlert(Home));

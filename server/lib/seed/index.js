@@ -8,78 +8,74 @@ const {
   sequelize,
 } = require('../db');
 
-// const campaigns = require('./Campaign');
-// const classes = require('./Class');
-// const questions = require('./Question');
-// const questionInstances = require('./QuestionInstance');
+const campaigns = require('./Campaign');
+const classes = require('./Class');
+const questions = require('./Question');
+const questionInstances = require('./QuestionInstance');
 
 (async function seed() {
   try {
-    // await sequelize.sync();
+    await sequelize.sync();
+    console.log('db synced');
     // await sequelize.sync({ force: true });
+    // console.log('tables dropped');
     await sequelize.truncate({ cascade: true });
+    console.log('db truncated');
 
-    const [question1, question2] = await Question.bulkCreate(
-      [{ text: 'question1' }, { text: 'question2' }],
-      {
-        returning: true,
-      },
-    );
+    const [
+      question1,
+      question2,
+      question3,
+      question4,
+    ] = await Question.bulkCreate(questions, {
+      returning: true,
+    });
+    const [campaign1, campaign2] = await Campaign.bulkCreate(campaigns, {
+      returning: true,
+    });
+    const [class1, class2, class3, class4] = await Class.bulkCreate(classes, {
+      returning: true,
+    });
 
-    const [campaign1, campaign2] = await Campaign.bulkCreate(
-      [
-        {
-          admins: ['teacher1', 'teacher2'],
-          dueDate: new Date(),
-        },
-        {
-          admins: ['teacher1', 'teacher2'],
-          dueDate: new Date(),
-        },
-      ],
-      { returning: true },
-    );
-    const [class1, class2] = await Class.bulkCreate(
-      [
-        { admins: ['teacher1', 'teacher2'], name: 'class1' },
-        { admins: ['teacher1', 'teacher2'], name: 'class2' },
-      ],
-      { returning: true },
-    );
     await class1.addCampaign(campaign1);
-    await class2.addCampaigns([campaign1, campaign2]);
+    await class2.addCampaign(campaign1);
+    await class3.addCampaigns([campaign1, campaign2]);
+    await class4.addCampaign(campaign2);
+    await campaign1.addClasses([class1, class2, class3]);
+    await campaign2.addClasses([class3, class4]);
 
-    const [instance1, instance2] = await QuestionInstance.bulkCreate(
+    const [instance1] = await QuestionInstance.bulkCreate(
       [
-        {
-          admins: ['teacherId1'],
-          student: ['studentId1'],
+        Object.assign({}, questionInstances[0], {
           CampaignId: campaign1.id,
           QuestionId: question1.id,
-        },
-        {
-          admins: ['teacherId1'],
-          student: ['studentId2'],
+        }),
+        Object.assign({}, questionInstances[1], {
           CampaignId: campaign1.id,
           QuestionId: question2.id,
-        },
+        }),
+        Object.assign({}, questionInstances[2], {
+          CampaignId: campaign2.id,
+          QuestionId: question3.id,
+        }),
+        Object.assign({}, questionInstances[3], {
+          CampaignId: campaign2.id,
+          QuestionId: question4.id,
+        }),
       ],
       { returning: true },
     );
 
-    // console.log('TEST', (await campaign1.getQuestionInstances()).length);
-    // console.log('TEST2', (await instance1.getCampaign()).get());
-    // console.log('TEST3', (await instance1.getQuestion()).get());
-
-    const i = await QuestionInstance.findById(instance1.id, {
+    const theInstance = await QuestionInstance.findById(instance1.id, {
       include: [Campaign, Question],
     });
-    // console.log('III', i.get());
-
-    const c = await Campaign.findById(campaign1.id, {
+    const theCampaign = await Campaign.findById(campaign1.id, {
       include: [Class, QuestionInstance],
     });
-    console.log('CCC', c.get());
+
+    // console.log('Instance', theInstance.get());
+    console.log('\n');
+    // console.log('Campaign', theCampaign.get());
 
     console.log('Seed complete!');
   } catch (err) {
