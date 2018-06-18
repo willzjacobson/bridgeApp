@@ -12,6 +12,15 @@ export default EStyleSheet.create({
     textAlign: 'center',
     marginTop: 40,
   },
+  cardStyle: {
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    width: 'auto',
+    height: 'auto',
+    backgroundColor: '$cardColor',
+  },
   card: {
     flex: 1,
     height: '100%',
@@ -19,7 +28,6 @@ export default EStyleSheet.create({
     borderWidth: 2,
     borderColor: '$border',
     justifyContent: 'center',
-    backgroundColor: 'white',
     padding: 10,
   },
   text: {

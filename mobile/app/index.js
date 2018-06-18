@@ -12,6 +12,7 @@ EStyleSheet.build({
   $border: '#E2E2E2',
   $darkText: '#343434',
   $inputText: '#797979',
+  $cardColor: '#e2e2e2',
   $white: '#ffffff',
   $black: '#000000',
 });

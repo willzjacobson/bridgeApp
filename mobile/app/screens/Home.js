@@ -9,7 +9,11 @@ import { getUserInfoFromStorage } from '../utils/AuthService';
 import { connectAlert } from '../components/Alert';
 import { CardDeck } from '../components/Cards';
 import { Header } from '../components/Header';
-import { loadQuestionInstances } from '../actions/questionInstances';
+import {
+  loadQuestionInstances,
+  shuffle,
+  submitQuestion,
+} from '../actions/questionInstances';
 import { setLoginInfo } from '../actions/login';
 
 const styles = EStyleSheet.create({
@@ -36,6 +40,7 @@ class Home extends Component {
     userId: PropTypes.string,
     token: PropTypes.string,
     questionInstances: PropTypes.array,
+    submittingQuestion: PropTypes.bool,
   };
 
   async componentDidMount() {
@@ -78,10 +83,33 @@ class Home extends Component {
     this.props.navigation.navigate('Options');
   };
 
+  sendCardToBack = cardIndex => {
+    this.props.dispatch(shuffle(cardIndex));
+  };
+
+  submitQuestion = async questionInstanceId => {
+    await this.props.dispatch(
+      submitQuestion(this.props.token, questionInstanceId),
+    );
+    this.props.alertWithType(
+      'success',
+      'Success',
+      'Question Successfully Submitted',
+    );
+    this.props.dispatch(
+      loadQuestionInstances(this.props.token, this.props.userId),
+    );
+  };
+
   render() {
     return (
       <View style={styles.container}>
-        <CardDeck questions={this.props.questionInstances} />
+        <CardDeck
+          questions={this.props.questionInstances}
+          submittingQuestion={this.props.submittingQuestion}
+          sendCardToBack={this.sendCardToBack}
+          submitQuestion={this.submitQuestion}
+        />
         <Header onPress={this.handleOptionsPress} />
       </View>
     );
@@ -94,6 +122,7 @@ const mapStateToProps = state => ({
   userId: state.loginInfo.userId,
   token: state.loginInfo.token,
   questionInstances: state.questionInstances.questionInstances,
+  submittingQuestion: state.questionInstances.submittingQuestion,
 });
 
 export default connect(mapStateToProps)(connectAlert(Home));

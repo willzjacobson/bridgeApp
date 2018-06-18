@@ -73,11 +73,8 @@ const questionInstances = require('./QuestionInstance');
       include: [Class, QuestionInstance],
     });
 
-    // console.log('Instance', theInstance.get());
-    console.log('\n');
-    // console.log('Campaign', theCampaign.get());
-
     console.log('Seed complete!');
+    process.exit();
   } catch (err) {
     console.log('Seed Fail:', err);
   }
